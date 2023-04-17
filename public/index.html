@@ -4,7 +4,7 @@
 <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.1/dist/vuetify.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.1/dist/vuetify.min.css?v=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <style>
         .done {
@@ -13,14 +13,6 @@
 
         [v-cloak] {
             display: none;
-        }
-
-        .v-application--is-dark {
-            background-color: #424242;
-        }
-
-        .v-application {
-            background-color: #f5f5f5;
         }
     </style>
     <title>Задачи</title>
@@ -61,7 +53,8 @@
                                         <v-flex xs12>
                                             <v-text-field clearable v-model="todoTitle" id="newTodo" name="newTodo"
                                                 label="Введите название задачи" @keyup.enter="addTodo" :dark="isDark"
-                                                :style="{ background: isDark ? '#424242' : 'white' }"></v-text-field>
+                                                :style="{ backgroundColor: isDark ? '#424242' : 'white' }">
+                                            </v-text-field>
                                         </v-flex>
                                     </v-container>
                                     <v-subheader class="subheading" v-if="todos.length === 0">
@@ -81,7 +74,8 @@
                                                     {{todo.title | capitalize}}
                                                 </v-list-item-title>
                                                 <v-list-item-subtitle>
-                                                    Добавлено: {{todo.date | date}}
+                                                    Добавлено: {{todo.createdAt | date(true)}}
+                                                    (изменено: {{todo.updatedAt | date(true)}})
                                                 </v-list-item-subtitle>
                                             </v-list-item-content>
                                             <v-list-item-action>
