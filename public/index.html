@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.1/dist/vuetify.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <style>
+        .done {
+            text-decoration: line-through;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .v-application--is-dark {
+            background-color: #424242;
+        }
+
+        .v-application {
+            background-color: #f5f5f5;
+        }
+    </style>
+    <title>Задачи</title>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <v-app :dark="isDark" class="v-application--is-dark">
+            <v-app-bar app color="blue darken-4" dark>
+                <v-toolbar-side-icon></v-toolbar-side-icon>
+                <v-toolbar-title class="headline">Список дел</v-toolbar-title>
+
+                <v-spacer></v-spacer>
+
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn icon @click="isDark = !isDark">
+                            <v-icon>{{ isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>{{isDark ? 'Светлая тема' : 'Темная тема'}}</span>
+                </v-tooltip>
+            </v-app-bar>
+            <v-main>
+                <v-container>
+                    <v-layout row justify-center>
+                        <v-flex xs12>
+                            <v-card>
+                                <v-list two-line subheader>
+                                    <v-container>
+                                        <v-subheader class="headline">
+                                            {{new Date() | date}}
+                                        </v-subheader>
+                                        <v-spacer></v-spacer>
+
+                                        <p class="text-xs-right align-self-end"><b>{{todos.length}}</b> Задач</p>
+
+                                        <v-flex xs12>
+                                            <v-text-field clearable v-model="todoTitle" id="newTodo" name="newTodo"
+                                                label="Введите название задачи" @keyup.enter="addTodo" :dark="isDark"
+                                                :style="{ background: isDark ? '#424242' : 'white' }"></v-text-field>
+                                        </v-flex>
+                                    </v-container>
+                                    <v-subheader class="subheading" v-if="todos.length === 0">
+                                        У вас 0 задач, добавьте новую
+                                    </v-subheader>
+                                    <v-subheader class="subheading" v-else>
+                                        Ваши задачи
+                                    </v-subheader>
+                                    <div v-for="(todo, i) in todos" :key="i">
+                                        <v-list-item avatar>
+                                            <v-list-item-action>
+                                                <v-checkbox v-if="!todo.done" v-model="todo.done" :dark="isDark">
+                                                </v-checkbox>
+                                            </v-list-item-action>
+                                            <v-list-item-content>
+                                                <v-list-item-title :class="{done: todo.done}">
+                                                    {{todo.title | capitalize}}
+                                                </v-list-item-title>
+                                                <v-list-item-subtitle>
+                                                    Добавлено: {{todo.date | date}}
+                                                </v-list-item-subtitle>
+                                            </v-list-item-content>
+                                            <v-list-item-action>
+                                                <v-btn icon ripple color="red" @click="removeTodo(todo.id)">
+                                                    <v-icon class="white--text">mdi-close</v-icon>
+                                                </v-btn>
+                                            </v-list-item-action>
+                                        </v-list-item>
+                                    </div>
+                                </v-list>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.0/dist/vuetify.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
+</body>
+
+</html>
