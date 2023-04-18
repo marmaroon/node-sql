@@ -4,7 +4,7 @@
 <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.1/dist/vuetify.min.css?v=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.1/dist/vuetify.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <style>
         .done {
@@ -14,6 +14,7 @@
         [v-cloak] {
             display: none;
         }
+
     </style>
     <title>Задачи</title>
 </head>
@@ -66,7 +67,7 @@
                                     <div v-for="(todo, i) in todos" :key="i">
                                         <v-list-item avatar>
                                             <v-list-item-action>
-                                                <v-checkbox v-if="!todo.done" v-model="todo.done" :dark="isDark">
+                                                <v-checkbox v-if="!todo.done" v-model="todo.done" @change="completeTodo(todo.id)" :dark="isDark">
                                                 </v-checkbox>
                                             </v-list-item-action>
                                             <v-list-item-content>
@@ -95,7 +96,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.0/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.1/dist/vuetify.js"></script>
     <script src="app.js"></script>
 </body>
 

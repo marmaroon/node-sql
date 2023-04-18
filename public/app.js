@@ -6,8 +6,30 @@ new Vue({
       isDark: true,
       show: true,
       todoTitle: '',
-      todos: []
+      todos: [] //весь массив задачек
     }
+  },
+  created() {
+    const query = `
+    query{
+      getTodos {
+        id title done createdAt updatedAt
+      }
+    }
+    `
+
+    fetch('/graphql', {
+      method: 'post', // всегда post запрос для graphql
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({query: query})
+    })
+    .then(res => res.json())
+    .then(response => {
+      this.todos = response.data.getTodos
+    })
   },
   methods: {
     addTodo() {
@@ -17,18 +39,37 @@ new Vue({
       }
       fetch('/api/todo', {
         method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({title})
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
       })
         .then(res => res.json())
-        .then(({todo}) => {
+        .then(({ todo }) => {
           this.todos.push(todo)
           this.todoTitle = ''
         })
         .catch(e => console.log(e))
     },
-    removeTodo(id) {
-      this.todos = this.todos.filter(t => t.id !== id)
+    removeTodo(id) { // в прошлый раз там была прям прогрузка всей страницы, здесь за счет Vue динамическое изменение страницы?
+      fetch('/api/todo/' + id, {
+        method: 'delete'
+      })
+      .then(() => {
+        this.todos = this.todos.filter(t => t.id !== id) // отфильтруем массив todos, где не будет того элемента
+      })
+      .catch(e => console.log(e))
+    },
+    completeTodo(id) {
+      fetch('/api/todo/' + id, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' }, //хэдеры мы описываем в том случае, когда передаем что-то на сервер
+        body: JSON.stringify({ done: true })
+      })
+        .then(res => res.json())
+        .then(({ todo }) => { //получаем объект todo из ответа в формате json 
+          const idx = this.todos.findIndex(t => t.id === todo.id) //находим индекс элемента в массиве todos 
+          this.todos[idx].updatedAt = todo.updatedAt //обновляем св-во этого элемента
+        })
+        .catch(e => console.log(e))
     }
   },
   filters: {
@@ -47,7 +88,7 @@ new Vue({
         options.minute = '2-digit'
         options.second = '2-digit'
       }
-      return new Intl.DateTimeFormat('ru-RU', options).format(new Date(value))
+      return new Intl.DateTimeFormat('ru-RU', options).format(new Date(+value))
     }
   }
 })
