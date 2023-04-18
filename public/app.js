@@ -24,12 +24,12 @@ new Vue({
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({query: query})
+      body: JSON.stringify({ query: query })
     })
-    .then(res => res.json())
-    .then(response => {
-      this.todos = response.data.getTodos
-    })
+      .then(res => res.json())
+      .then(response => {
+        this.todos = response.data.getTodos
+      })
   },
   methods: {
     addTodo() {
@@ -37,15 +37,26 @@ new Vue({
       if (!title) {
         return
       }
-      fetch('/api/todo', {
+      const query = `
+        mutation {
+          createTodo(todo: {title: "${title}"}) {
+            id title done createdAt updatedAt
+          }
+        }
+      `
+      fetch('/graphql', {
         method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title })
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ query })
       })
         .then(res => res.json())
-        .then(({ todo }) => {
-          this.todos.push(todo)
-          this.todoTitle = ''
+        .then(response => { //параметр response содержит объект, который является ответом от сервера
+          const todo = response.data.createTodo //здесь содержится созданная задача в виде объекта
+          this.todos.push(todo) // добавляем эту задачу в список
+          this.todoTitle = '' // очищаем поле ввода
         })
         .catch(e => console.log(e))
     },
@@ -53,21 +64,32 @@ new Vue({
       fetch('/api/todo/' + id, {
         method: 'delete'
       })
-      .then(() => {
-        this.todos = this.todos.filter(t => t.id !== id) // отфильтруем массив todos, где не будет того элемента
-      })
-      .catch(e => console.log(e))
+        .then(() => {
+          this.todos = this.todos.filter(t => t.id !== id) // отфильтруем массив todos, где не будет того элемента
+        })
+        .catch(e => console.log(e))
     },
     completeTodo(id) {
-      fetch('/api/todo/' + id, {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' }, //хэдеры мы описываем в том случае, когда передаем что-то на сервер
-        body: JSON.stringify({ done: true })
+      const query = `
+        mutation {
+          completeTodo(id: "${id}") {
+            updatedAt
+          }
+        }
+      `
+
+      fetch('/graphql', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }, //хэдеры мы описываем в том случае, когда передаем что-то на сервер
+        body: JSON.stringify({ query })
       })
         .then(res => res.json())
-        .then(({ todo }) => { //получаем объект todo из ответа в формате json 
-          const idx = this.todos.findIndex(t => t.id === todo.id) //находим индекс элемента в массиве todos 
-          this.todos[idx].updatedAt = todo.updatedAt //обновляем св-во этого элемента
+        .then(response => { //получаем объект todo из ответа в формате json 
+          const idx = this.todos.findIndex(t => t.id === id) //находим индекс элемента в массиве todos 
+          this.todos[idx].updatedAt = response.data.completeTodo.updatedAt //обновляем св-во этого элемента
         })
         .catch(e => console.log(e))
     }
